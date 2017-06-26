@@ -41,6 +41,7 @@
 #include <kernels/HausdorffKernel.hpp>
 #include <kernels/InfoKernel.hpp>
 #include <kernels/MergeKernel.hpp>
+#include <kernels/NobleKernel.hpp>
 #include <kernels/PipelineKernel.hpp>
 #include <kernels/RandomKernel.hpp>
 #include <kernels/SortKernel.hpp>
@@ -62,6 +63,7 @@ KernelFactory::KernelFactory(bool no_plugins)
     PluginManager::initializePlugin(HausdorffKernel_InitPlugin);
     PluginManager::initializePlugin(InfoKernel_InitPlugin);
     PluginManager::initializePlugin(MergeKernel_InitPlugin);
+    PluginManager::initializePlugin(NobleKernel_InitPlugin);
     PluginManager::initializePlugin(PipelineKernel_InitPlugin);
     PluginManager::initializePlugin(RandomKernel_InitPlugin);
     PluginManager::initializePlugin(SortKernel_InitPlugin);
