@@ -43,6 +43,7 @@
 
 #include <array>
 #include <functional>
+#include <mutex>
 #include <sstream>
 #include <vector>
 

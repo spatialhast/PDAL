@@ -38,7 +38,6 @@
 
 #include <functional>
 #include <map>
-#include <mutex>
 
 #include <ogr_spatialref.h>
 
