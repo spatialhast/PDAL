@@ -40,6 +40,7 @@
 #include <pdal/pdal_macros.hpp>
 #include <pdal/util/FileUtils.hpp>
 
+#include <ogr_core.h>
 #include <ogrsf_frmts.h>
 
 namespace pdal
