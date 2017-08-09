@@ -43,8 +43,7 @@
 #include <ogr_core.h>
 #include <ogrsf_frmts.h>
 
-// Only build this if we have at least version 2.1
-#ifdef PDAL_GDAL2_1
+#ifndef PDAL_GDAL2_1
 
 namespace pdal
 {
@@ -90,12 +89,8 @@ void OGRWriter::initialize()
 void OGRWriter::prepared(PointTableRef table)
 {
     if (m_measureDimName.size())
-    {
-        m_measureDim = table.layout()->findDim(m_measureDimName);
-        if (m_measureDim == Dimension::Id::Unknown)
-            throwError("Dimension '" + m_measureDimName + "' (measure_dim) not "
-                "found.");
-    }
+        throwError("Option 'measure_dim' not supported until GDAL "
+            "version 2.1.");
 
     if (m_driverName.empty())
     {
@@ -109,11 +104,9 @@ void OGRWriter::prepared(PointTableRef table)
 
 void OGRWriter::readyTable(PointTableRef table)
 {
-    m_driver = GetGDALDriverManager()->GetDriverByName(m_driverName.data());
-    if (m_measureDim == Dimension::Id::Unknown)
-        m_geomType = (m_multiCount == 1) ? wkbPoint : wkbMultiPoint;
-    else
-        m_geomType = (m_multiCount == 1) ? wkbPointZM : wkbMultiPointZM;
+    m_driver = OGRSFDriverRegistrar::GetRegistrar()->GetDriverByName(
+        m_driverName.data());
+    m_geomType = (m_multiCount == 1 ? wkbPoint : wkbMultiPoint);
 }
 
 
@@ -121,17 +114,13 @@ void OGRWriter::readyFile(const std::string& filename,
     const SpatialReference& srs)
 {
     m_outputFilename = filename;
-    m_ds = m_driver->Create(filename.data(), 0, 0, 0, GDT_Unknown, nullptr);
+    m_ds = m_driver->CreateDataSource(filename.data(), nullptr);
     if (!m_ds)
         throwError("Unable to open OGR datasource '" + filename + "'.\n");
-    m_layer = m_ds->CreateLayer("points", nullptr, m_geomType, nullptr);
+    OGRSpatialReference ogrSrs(srs.getWKT().data());
+    m_layer = m_ds->CreateLayer("points", &ogrSrs, m_geomType, nullptr);
     if (!m_layer)
         throwError("Can't create OGR layer for points.\n");
-    {
-        gdal::ErrorHandlerSuspender devnull;
-
-        m_ds->SetProjection(srs.getWKT().data());
-    }
     m_feature = OGRFeature::CreateFeature(m_layer->GetLayerDefn());
 }
 
@@ -155,8 +144,6 @@ bool OGRWriter::processOne(PointRef& point)
     double m = point.getFieldAs<double>(m_measureDim);
 
     OGRPoint pt(x, y, z);
-    if (m_measureDim != Dimension::Id::Unknown)
-        pt.setM(m);
     m_curCount++;
 
     if (m_multiCount > 1)

@@ -37,11 +37,22 @@
 #include <pdal/plugin.hpp>
 #include <pdal/util/ProgramArgs.hpp>
 
-#include <gdal_priv.h>
-#include <ogr_feature.h>
+#include <gdal_version.h>
 
 extern "C" int32_t OGRWriter_ExitFunc();
 extern "C" PF_ExitFunc OGRWriter_InitPlugin();
+
+#if GDAL_VERSION_MAJOR > 2 || \
+    (GDAL_VERSION_MAJOR == 2 && GDAL_VERSION_MINOR > 0)
+#define PDAL_GDAL2_1
+#endif
+
+#ifdef PDAL_GDAL2_1
+#include <gdal_priv.h>
+#include <ogr_feature.h>
+#else
+#include <ogrsf_frmts.h>
+#endif
 
 namespace pdal
 {
@@ -67,8 +78,13 @@ private:
     virtual void doneFile();
 
     // I don't think this needs to be deleted.
+#ifdef PDAL_GDAL2_1
     GDALDriver *m_driver;
     GDALDataset *m_ds;
+#else
+    OGRSFDriver *m_driver;
+    OGRDataSource *m_ds;
+#endif
     OGRLayer *m_layer;
     OGRFeature *m_feature;
     OGRwkbGeometryType m_geomType;

@@ -46,10 +46,14 @@
 #include <sstream>
 #include <vector>
 
+/**
 #include <cpl_port.h>
-#include <gdal_priv.h>
 #include <cpl_vsi.h>
+#include <ogr_srs_api.h>
+**/
 #include <cpl_conv.h>
+#include <gdal_priv.h>
+#include <ogr_api.h>
 #include <ogr_srs_api.h>
 
 namespace pdal
