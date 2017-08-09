@@ -205,7 +205,6 @@ private:
 class PDAL_DLL ErrorHandler
 {
 public:
-
     /**
       Get the singleton error handler.
 
@@ -253,7 +252,6 @@ public:
     ErrorHandler();
 
 private:
-
     void handle(::CPLErr level, int num, const char *msg);
 
 private:
@@ -261,9 +259,16 @@ private:
     pdal::LogPtr m_log;
     int m_errorNum;
     bool m_cplSet;
-
 };
 
+class ErrorHandlerSuspender
+{
+public:
+    ErrorHandlerSuspender()
+        { CPLPushErrorHandler(CPLQuietErrorHandler); }
+    ~ErrorHandlerSuspender()
+        { (void)CPLPopErrorHandler(); }
+};
 
 enum class GDALError
 {
