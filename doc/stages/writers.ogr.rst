@@ -60,6 +60,11 @@ measure_dim
   of which is specified by this option. Not all output formats support
   measure data. [Default: None]
 
+  .. note::
+
+    The **measure_dim** option is only supported if PDAL is built with
+    GDAL version 2.1 or later.
+
 ogrdriver
   The OGR driver to use for output.  This option overrides any inference made
   about output drivers from 'filename'.
